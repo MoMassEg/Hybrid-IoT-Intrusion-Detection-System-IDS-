@@ -42,6 +42,9 @@ venv.bak/
 # Project-specific
 data/*.parquet
 data/*.csv
+data/external_*/
+data/*.csv.gz
+data/*.zip
 models/*.joblib
 logs/*.log
 reports/*.json

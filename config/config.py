@@ -100,15 +100,15 @@ RANDOM_FOREST_CONFIG = {
 # Phase 4 - Fusion & Threshold Configuration
 # ─────────────────────────────────────────────
 FUSION_CONFIG = {
-    "alpha": 0.5,              # Fusion weight: 0=RF only, 1=IF only
+    "alpha": 0.10,             # Fusion weight: 0=RF only, 1=IF only
     "fusion_method": "weighted_linear",   # Options: weighted_linear, max, product, stacking
 }
 
 THRESHOLD_CONFIG = {
     "tau_base": 0.5,           # Base detection threshold
-    "beta1": 0.1,              # Network load weight
-    "beta2": 0.05,             # Device risk weight
-    "beta3": 0.05,             # Time-of-day weight
+    "beta1": 0.05,             # Network load weight
+    "beta2": 0.025,            # Device risk weight
+    "beta3": 0.025,            # Time-of-day weight
     "warning_margin": 0.15,    # Buffer above tau for CRITICAL
 }
 

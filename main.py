@@ -20,7 +20,7 @@ from utils.logger import get_logger
 
 from phase1_data.data_loader import IoTDataLoader
 from phase2_profiling.behavioral_profiler import BehavioralProfiler
-from phase3_models.isolation_forest_model import IsolationForestModel
+from phase3_models.sgd_one_class_svm_model import SGDOneClassSVMModel
 from phase3_models.random_forest_model import RandomForestModel
 from phase4_fusion.decision_fusion import DecisionFusionEngine
 from phase4_fusion.adaptive_threshold import AdaptiveThresholdEngine
@@ -144,7 +144,7 @@ def run_phase1(cfg: dict, loader: IoTDataLoader) -> dict:
     y_test  = splits["y_test"]
 
     # ── 1.4 Normal-only for IF ────────────────────────────────────
-    logger.info("\n[1.4] Extracting normal samples for Isolation Forest...")
+    logger.info("\n[1.4] Extracting normal samples for SGD One-Class SVM...")
     X_normal = loader.get_normal_data(X_train, y_train)
 
     # ── 1.5 Device IDs ────────────────────────────────────────────
@@ -330,9 +330,9 @@ def run_phase2(cfg: dict, p1: dict) -> dict:
 # =============================================================================
 def run_phase3(cfg: dict, p1: dict, p2: dict) -> dict:
     """
-    Phase 3: Train Isolation Forest + Random Forest.
+    Phase 3: Train SGD One-Class SVM + Random Forest.
 
-    Isolation Forest:
+    SGD One-Class SVM:
         - Trained on normal-only augmented data
         - Contamination estimated from label ratio
         - Threshold tuned on validation set
@@ -355,11 +355,11 @@ def run_phase3(cfg: dict, p1: dict, p2: dict) -> dict:
     y_test    = p1["y_test"]
 
     # ══════════════════════════════════════════════════════════════
-    # 3A: Isolation Forest
+    # 3A: SGD One-Class SVM
     # ══════════════════════════════════════════════════════════════
-    _banner("3A: Isolation Forest (Unsupervised)", char="─", width=50)
+    _banner("3A: SGD One-Class SVM (Unsupervised)", char="─", width=50)
 
-    if_model = IsolationForestModel()
+    if_model = SGDOneClassSVMModel()
 
     # Optional: full hyperparameter search
     if cfg["tune_if"]:
@@ -370,7 +370,7 @@ def run_phase3(cfg: dict, p1: dict, p2: dict) -> dict:
             y_val,
             feature_names=aug_fn
         )
-        if_model = IsolationForestModel(config=best_cfg)
+        if_model = SGDOneClassSVMModel(config=best_cfg)
     else:
         logger.info("Skipping IF tuning (tune_if=False)")
 
@@ -727,7 +727,7 @@ def _print_model_comparison(
     logger.info("\n┌─────────────────────────────────────────────────────┐")
     logger.info("│          MODEL COMPARISON (Test Set)                │")
     logger.info("├──────────────────────┬──────────────────┬───────────┤")
-    logger.info("│ Metric               │ Isolation Forest │ Rand Forest│")
+    logger.info("│ Metric               │ SGD One-Class SVM│ Rand Forest│")
     logger.info("├──────────────────────┼──────────────────┼───────────┤")
 
     metrics = ["roc_auc", "avg_precision", "f1_score",
